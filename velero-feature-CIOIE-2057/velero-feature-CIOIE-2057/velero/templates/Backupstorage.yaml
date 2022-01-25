@@ -1,0 +1,19 @@
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: {{ include "velero.backupStorageLocation.name" . }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade,post-rollback
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    {{- include "velero.labels" . | nindent 4 }}
+spec:
+  provider: {{ include "velero.backupStorageLocation.provider" . }}
+  {{- with .Values.configuration.backupStorageLocation.default }}
+  default: {{ . }}
+  {{- end }}
+  {{- with .Values.configuration.backupStorageLocation }}
+  objectStorage:
+    bucket: {{ .Values.configuration.backupStorageLocation.bucketname }}
+    prefix: {{ .Values.configuration.backupStorageLocation.prefix }}
+    {{- end }}
